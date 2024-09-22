@@ -1,0 +1,141 @@
+<form name="container-form" class="mt-4" method="POST" action="/courses/handle-form-actions">
+    <div>
+        <h3>My Course</h3>
+        <a href="/me/trash/courses">Recycle Bin ({{deletedCount}})</a><br>
+        <a href="/courses/create">Upload Course</a>
+
+        <div class="mt-4 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                <label class="form-check-label" for="checkbox-all">
+                    Select all
+                </label>
+            </div>
+
+            <select class="form-control form-control-sm checkbox-select-all-options" name="action" required>
+                <option value="">-- Select --</option>
+                <option value="delete">Delete</option>
+            </select>
+
+            <button class="btn btn-primary btn-sm check-all-submit-btn disabled">Apply</button>
+        </div>
+    </div>
+    <table class="table" class="mt-4">
+        <thead>
+            <tr>
+                <th scope="col" colspan="2">#</th>
+                <th scope="col">Coure Name</th>
+                <th scope="col">Level</th>
+                <th scope="col" colspan="2">Created Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._id}}">
+                </div>
+                </td>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.level}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>
+                    <a href="/courses/{{this._id}}/edit" class="btn btn-link">Edit</a>
+                    <a href="" class="btn btn-link" data-toggle="modal" data-id="{{this._id}}" data-target="#delete-course-modal">Delete</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="5">
+                    You did not upload any course.
+                    <a href="/courses/create">Upload your course</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+{{!-- Delete Course Confirmation --}}
+<div id="delete-course-modal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmation!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You want to delete this course?
+            </div>
+            <div class="modal-footer">
+                <button id="btn-delete-course" type="button" class="btn btn-danger">Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Delete hidden form --}}
+<form name="delete-course-form" method="POST"> 
+
+</form>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let courseID
+        const deleteForm = document.forms['delete-course-form']
+        const containerForm = document.forms['container-form']
+        const btnDeleteCourse = document.getElementById("btn-delete-course")
+        const checkboxAll = $('#checkbox-all')
+        const courseItemCheckbox = $('input[name="courseIds[]"]')
+        const checkAllSubmitBtn = $('.check-all-submit-btn')
+
+        $('#delete-course-modal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget)
+            courseID = button.data('id')
+        })
+        
+        btnDeleteCourse.onclick = function() {
+            deleteForm.action = '/courses/' + courseID + '?_method=DELETE'
+            deleteForm.submit()
+        }
+
+        checkboxAll.change(function() {
+            const isCheckedAll = $(this).prop('checked')
+            courseItemCheckbox.prop('checked', isCheckedAll)
+            renderCheckAllSubmitBtn()
+        })
+
+        courseItemCheckbox.change(function() {
+            const isCheckedAll = courseItemCheckbox.length === $('input[name="courseIds[]"]:checked').length
+            checkboxAll.prop('checked', isCheckedAll)
+            renderCheckAllSubmitBtn()
+        })
+
+        checkAllSubmitBtn.on('submit', function(e) {
+            const isSubmittable = !$(this).hasClass('disabled')
+            if (!isSubmittable) {
+                e.preventDefault()
+            }
+        })
+
+        function renderCheckAllSubmitBtn() {
+            const checkedCount = $('input[name="courseIds[]"]:checked').length
+            if (checkedCount) {
+                checkAllSubmitBtn.removeClass('disabled')
+            } else {
+                checkAllSubmitBtn.addClass('disabled')
+            }
+        }
+    })
+
+/*
+Reation to add event listener:
+    $content did not input to RAM when the program is run
+    => put $content into event listener will: 
+        let $content inputed to RAM when the program did run
+*/
+</script>

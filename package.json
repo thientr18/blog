@@ -1,0 +1,53 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "main": "scr/index.js",
+  "scripts": {
+    "beautify": "prettier -write --single-quote --trailing-comma all --tab-width 4 'src/**/*.{js,json,scss,hbs}'",
+    "start": "nodemon --inspect src/index.js",
+    "watch": "node-sass --watch src/resources/scss/app.scss --output src/public/css/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thientr18/nodejs_blog.git"
+  },
+  "keywords": [
+    "f8",
+    "blog",
+    "f8",
+    "nodejs",
+    "nodejs"
+  ],
+  "author": "thientran",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thientr18/nodejs_blog/issues"
+  },
+  "homepage": "https://github.com/thientr18/nodejs_blog#readme",
+  "description": "",
+  "lint-staged": {
+    "'src/**/*.{js,json,scss}'": "prettier -write --single-quote --trailing-comma all --tab-width 4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "dependencies": {
+    "express": "^4.20.0",
+    "express-handlebars": "^8.0.1",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.6.2",
+    "mongoose-delete": "^1.0.2",
+    "mongoose-slug-updater": "^3.3.0"
+  },
+  "devDependencies": {
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "morgan": "^1.10.0",
+    "node-sass": "^9.0.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3"
+  }
+}

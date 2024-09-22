@@ -1,0 +1,22 @@
+.card-course-item {
+  margin-top: 16px; }
+
+.col-container {
+  display: table;
+  /* Make the container element behave like a table */
+  width: 100%;
+  /* Set full-width to expand the whole page */ }
+
+.col {
+  display: table-cell;
+  /* Make elements inside the container behave like table cells */ }
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  border-radius: 50%; }
+
+.checkbox-select-all-options {
+  width: 120px;
+  margin: 0 16px; }
