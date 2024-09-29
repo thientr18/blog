@@ -21,10 +21,12 @@ class CourseController {
     // [POST] /course/store
     store(req, res, next) {
         req.body.image = `https://img.youtube.com/vi/${req.body.videoId}/sddefault.jpg`;
+
         const course = new Course(req.body);
-        course.save()
+        course
+            .save()
             .then(() => res.redirect('/me/stored/courses'))
-            .catch({});
+            .catch(next);
     }
     
     // [GET] /course/:id/edit
@@ -73,6 +75,18 @@ class CourseController {
                 Course.delete({ _id: { $in: req.body.courseIds } })
                     .then(() => res.redirect('back'))
                     .catch(next);
+                break;
+            case 'restore':
+                Course.restore({ _id: { $in: req.body.courseIds } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+                console.log('restore')
+                break;
+            case 'permanent':
+                Course.deleteOne({ _id: { $in: req.body.courseIds } })
+                    .then(() => res.redirect('back'))
+                    .catch(next);
+                console.log('Permanent')
                 break;
             default:
                 res.json({

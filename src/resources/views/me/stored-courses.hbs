@@ -17,16 +17,26 @@
                 <option value="delete">Delete</option>
             </select>
 
-            <button class="btn btn-primary btn-sm check-all-submit-btn disabled">Apply</button>
+            <button class="btn btn-primary btn-sm check-all-submit-btn" disabled>Apply</button>
         </div>
     </div>
+    <br>
     <table class="table" class="mt-4">
         <thead>
             <tr>
                 <th scope="col" colspan="2">#</th>
-                <th scope="col">Coure Name</th>
-                <th scope="col">Level</th>
-                <th scope="col" colspan="2">Created Time</th>
+                <th scope="col">
+                    Coure Name
+                    {{{sortable 'name' _sort}}}
+                </th>
+                <th scope="col">
+                    Level
+                    {{{sortable 'level' _sort}}}
+                </th>
+                <th scope="col" colspan="2">
+                    Created Time
+                    {{{sortable 'createdAt' _sort}}}
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -87,7 +97,8 @@
     document.addEventListener("DOMContentLoaded", function() {
         let courseID
         const deleteForm = document.forms['delete-course-form']
-        const containerForm = document.forms['container-form']
+        // const containerForm = document.forms['container-form']
+        const containerForm = $('form[name="container-form"]')
         const btnDeleteCourse = document.getElementById("btn-delete-course")
         const checkboxAll = $('#checkbox-all')
         const courseItemCheckbox = $('input[name="courseIds[]"]')
@@ -115,8 +126,8 @@
             renderCheckAllSubmitBtn()
         })
 
-        checkAllSubmitBtn.on('submit', function(e) {
-            const isSubmittable = !$(this).hasClass('disabled')
+        containerForm.on('submit', function(e) {
+            const isSubmittable = !checkAllSubmitBtn.hasClass('disabled')
             if (!isSubmittable) {
                 e.preventDefault()
             }
@@ -125,9 +136,9 @@
         function renderCheckAllSubmitBtn() {
             const checkedCount = $('input[name="courseIds[]"]:checked').length
             if (checkedCount) {
-                checkAllSubmitBtn.removeClass('disabled')
+                checkAllSubmitBtn.attr('disabled', false)
             } else {
-                checkAllSubmitBtn.addClass('disabled')
+                checkAllSubmitBtn.attr('disabled', true)
             }
         }
     })

@@ -1,14 +1,31 @@
-<div class="mt-4">
+<form name="container-form" class="mt-4" method="POST" action="/courses/handle-form-actions">
     <div>
         <h3>Deleted Course</h3>
         <a href="/me/stored/courses">Course list</a>
-    </div>
 
+        <div class="mt-4 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                <label class="form-check-label" for="checkbox-all">
+                    Select all
+                </label>
+            </div>
+
+            <select class="form-control form-control-sm checkbox-select-all-options" name="action" required>
+                <option value="">-- Select --</option>
+                <option value="restore">Restore</option>
+                <option value="permanent">Permanently Delete</option>
+            </select>
+
+            <button class="btn btn-primary btn-sm check-all-submit-btn" disabled>Apply</button>
+        </div>
+    </div>
+    <br>
     {{#if binCourses includeZero=false}}
     <table class="table" class="mt-4">
         <thead>
             <tr>
-                <th scope="col">#</th>
+                <th scope="col" colspan="2">#</th>
                 <th scope="col">Coure Name</th>
                 <th scope="col">Level</th>
                 <th scope="col" colspan="2">Deleted Time</th>
@@ -17,6 +34,11 @@
         <tbody>
             {{#each binCourses}}
             <tr>
+                <td>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._id}}">
+                </div>
+                </td>
                 <th scope="row">{{sum @index 1}}</th>
                 <td>{{this.name}}</td>
                 <td>{{this.level}}</td>
@@ -39,7 +61,7 @@
         </td>
     </tr> 
     {{/if}}
-</div>
+</form>
 
 {{!-- Delete Course Confirmation --}}
 <div id="delete-course-modal" class="modal fade" tabindex="-1" aria-hidden="true">
@@ -70,8 +92,12 @@
         let courseId
         const deleteForm = document.forms['delete-course-form']
         const restoreForm = document.forms['restore-course-form']
+        const containerForm = $('form[name="container-form"]')
         const btnDeleteCourse = document.getElementById("btn-delete-course")
         let restoreBtn = $('.btn-restore')
+        const checkboxAll = $('#checkbox-all')
+        const courseItemCheckbox = $('input[name="courseIds[]"]')
+        const checkAllSubmitBtn = $('.check-all-submit-btn')
 
         $('#delete-course-modal').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget)
@@ -84,13 +110,42 @@
             deleteForm.submit()
         }
 
+        // Item restore btn
         restoreBtn.click( function(e) {
             e.preventDefault()
-
-            const courseId = $(this).data('id')
+            courseId = $(this).data('id')
             restoreForm.action = '/courses/' + courseId + '/restore?_method=PATCH'
             restoreForm.submit()
         })
+
+        // checkbox all btn
+        checkboxAll.change(function() {
+            const isCheckedAll = $(this).prop('checked')
+            courseItemCheckbox.prop('checked', isCheckedAll)
+            renderCheckAllSubmitBtn()
+        })
+
+        courseItemCheckbox.change(function() {
+            const isCheckedAll = courseItemCheckbox.length === $('input[name="courseIds[]"]:checked').length
+            checkboxAll.prop('checked', isCheckedAll)
+            renderCheckAllSubmitBtn()
+        })
+
+        containerForm.on('submit', function(e) {
+            const isSubmittable = !checkAllSubmitBtn.hasClass('disabled')
+            if (!isSubmittable) {
+                e.preventDefault()
+            }
+        })
+
+        function renderCheckAllSubmitBtn() {
+            const checkedCount = $('input[name="courseIds[]"]:checked').length
+            if (checkedCount) {
+                checkAllSubmitBtn.attr('disabled', false)
+            } else {
+                checkAllSubmitBtn.attr('disabled', true)
+            }
+        }
     })
 
 /*
